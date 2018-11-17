@@ -48,7 +48,7 @@ $(function() {
   multiPlayBtn.text("Play");
   var multiInstructionText = $("<div class='multiInstructionText'>");
   multiInstructionText.text("Just one can win. Get precious items from other side of the river and place them in to wooden chest. Player 1 use arrows, Player 2 WSAD. Be awere of big spider!");
-  multiInstructions.append(multiInstructionText)
+  multiInstructions.append(multiInstructionText);
   multiInstructions.append(multiPlayBtn);
 
   //Play Buttons===========================
@@ -93,38 +93,32 @@ $(function() {
         this.PosY = PosY;
         this.id = id;
         this.initPosX = PosX;
-        this.initPosY = PosY
+        this.initPosY = PosY;
+        this.el = $("<div class='" + name + "'>");
+        this.setPosition();
       }
       hide() {
-        $(this.name).hide();
+        $(this.el).hide();
         this.PosX = -1;
         this.PosY = -1;
         player1.trophie = this.id;
+        console.log(this.el);
       }
       show() {
-        $(this.name).show();
+        $(this.el).show();
         this.PosX = this.initPosX;
         this.PosY = this.initPosY;
       }
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('bottom', this.PosY * 50);
+        container.append(this.el);
+      }
     }
 
-    var trophie_1 = new Trophies(".trophie_1-1", 1, 10, 1);
-    var trophie_1_1 = $("<div class='trophie_1-1'>");
-    container.append(trophie_1_1);
-    trophie_1_1.css('left', trophie_1.PosX * 50);
-    trophie_1_1.css('bottom', trophie_1.PosY * 50);
-
-    var trophie_2 = new Trophies(".trophie_1-2", 5, 10, 2);
-    var trophie_1_2 = $("<div class='trophie_1-2'>");
-    container.append(trophie_1_2);
-    trophie_1_2.css('left', trophie_2.PosX * 50);
-    trophie_1_2.css('bottom', trophie_2.PosY * 50);
-
-    var trophie_3 = new Trophies(".trophie_1-3", 9, 10, 3);
-    var trophie_1_3 = $("<div class='trophie_1-3'>");
-    container.append(trophie_1_3);
-    trophie_1_3.css('left', trophie_3.PosX * 50);
-    trophie_1_3.css('bottom', trophie_3.PosY * 50);
+    var trophie_1 = new Trophies("trophie_1-1", 1, 10, 1);
+    var trophie_2 = new Trophies("trophie_1-2", 5, 10, 2);
+    var trophie_3 = new Trophies("trophie_1-3", 9, 10, 3);
 
     var trophiesTab = [
       trophie_1,
@@ -153,7 +147,15 @@ $(function() {
         this.direction = "";
         this.lifes = 3;
         this.items = 0;
-        this.trophie = -1
+        this.trophie = -1;
+        this.el = $("<div class='" + name + "'>");
+        this.setPosition();
+      }
+
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('bottom', this.PosY * 50);
+        container.append(this.el);
       }
 
       checkPosition(x, y) {
@@ -168,8 +170,12 @@ $(function() {
           }
         }
         //player dead================
+        var lvl0 = 0;
+        var lvl5 = 5;
+        var lvl10 = 10;
+
         for (var i = 0; i < raftsTab.length; i++) {
-          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== 0 && y !== 5 && y !== 10) {
+          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== lvl0 && y !== lvl5 && y !== lvl10) {
             player1.lifes = player1.lifes - 1;
             $('.lifes').text("Player lifes: " + player1.lifes);
 
@@ -193,7 +199,7 @@ $(function() {
           }
         }
 
-        if (x == 5 && y == 0 && player1.trophie !== -1) {
+        if (x == lvl5 && y == lvl0 && player1.trophie !== -1) {
           tresure1 = tresure1 + player1.trophie;
           player1.items = player1.items + 1;
           $('.items').text("Gathered items: " + player1.items + "/3");
@@ -203,52 +209,52 @@ $(function() {
         clearInterval(MoveToPlayer);
       }
 
-      checkPosition2(x, y) {
-        for (var i = 0; i < raftsTab.length; i++) {
-          if (x == raftsTab[i].PosX && y == raftsTab[i].PosY) {
-            let thisRaft = raftsTab[i];
-            console.log(x, y);
-            console.log(thisRaft);
-            clearInterval(MoveToPlayer);
-            movePlayer(thisRaft);
-            return;
-          }
-        }
-        //player dead================
-        for (var i = 0; i < raftsTab.length; i++) {
-          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== 0 && y !== 5 && y !== 10) {
-            player2.lifes = player2.lifes - 1;
-            $('.lifes2').text("Player2 lifes: " + player2.lifes);
-
-            for (var i = 0; i < trophiesTab.length; i++) {
-              if (player2.trophie - 1 == i) {
-                trophiesTab[i].show();
-                player2.trophie = -1;
-              }
-            }
-            player2.PosX = 5;
-            player2.PosY = 0;
-            clearInterval(MoveToPlayer);
-            changePosition();
-            return;
-          }
-        }
-
-        for (var i = 0; i < trophiesTab.length; i++) {
-          if (x == trophiesTab[i].PosX && y == trophiesTab[i].PosY && player2.trophie == -1) {
-            trophiesTab[i].hide();
-          }
-        }
-
-        if (x == 5 && y == 0 && player2.trophie !== -1) {
-          tresure2 = tresure2 + player2.trophie;
-          player2.items = player2.items + 1;
-          $('.items2').text("Gathered items: " + player2.items + "/3");
-          player2.trophie = -1;
-          console.log(tresure2);
-        }
-        clearInterval(MoveToPlayer);
-      }
+      // checkPosition2(x, y) {
+      //   for (var i = 0; i < raftsTab.length; i++) {
+      //     if (x == raftsTab[i].PosX && y == raftsTab[i].PosY) {
+      //       let thisRaft = raftsTab[i];
+      //       console.log(x, y);
+      //       console.log(thisRaft);
+      //       clearInterval(MoveToPlayer);
+      //       movePlayer(thisRaft);
+      //       return;
+      //     }
+      //   }
+      //   //player dead================
+      //   for (var i = 0; i < raftsTab.length; i++) {
+      //     if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== lvl0 && y !== lvl5 && y !== lvl10) {
+      //       player2.lifes = player2.lifes - 1;
+      //       $('.lifes2').text("Player2 lifes: " + player2.lifes);
+      //
+      //       for (var i = 0; i < trophiesTab.length; i++) {
+      //         if (player2.trophie - 1 == i) {
+      //           trophiesTab[i].show();
+      //           player2.trophie = -1;
+      //         }
+      //       }
+      //       player2.PosX = 5;
+      //       player2.PosY = 0;
+      //       clearInterval(MoveToPlayer);
+      //       changePosition();
+      //       return;
+      //     }
+      //   }
+      //
+      //   for (var i = 0; i < trophiesTab.length; i++) {
+      //     if (x == trophiesTab[i].PosX && y == trophiesTab[i].PosY && player2.trophie == -1) {
+      //       trophiesTab[i].hide();
+      //     }
+      //   }
+      //
+      //   if (x == 5 && y == 0 && player2.trophie !== -1) {
+      //     tresure2 = tresure2 + player2.trophie;
+      //     player2.items = player2.items + 1;
+      //     $('.items2').text("Gathered items: " + player2.items + "/3");
+      //     player2.trophie = -1;
+      //     console.log(tresure2);
+      //   }
+      //   clearInterval(MoveToPlayer);
+      // }
     }
 
 
@@ -278,16 +284,9 @@ $(function() {
     }
 
     let player1 = new player("player1", 0);
-    var playerLink = $("<div class='player1'>");
-    $('.container').append(playerLink);
-    $('.player1').css('left', player1.PosX * 50);
-    $('.player1').css('bottom', player1.PosY * 50);
-
-    let player2 = new player("player2", 0);
 
     let players = [
       player1,
-      player2
     ]
 
     if(player1.lifes < 1){
@@ -307,6 +306,14 @@ $(function() {
         this.direction = "";
         this.MaxXLeft = MaxXLeft;
         this.MaxXRight = MaxXRight;
+        this.el = $("<div class='" + name + "'>");
+        this.setPosition();
+      }
+
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('bottom', this.PosY * 50);
+        container.append(this.el);
       }
     }
 
@@ -315,115 +322,29 @@ $(function() {
 
     //Each raft create and put in HTML========
     // Line 1=================
-    var raft_1 = new rafts(6, 1, RaftSpeed1, ".tratwa_1-1", 0, 4);
-    var raft_1_1 = $("<div class='tratwa_1-1'>");
-    container.append(raft_1_1);
-    raft_1_1.css('left', raft_1.PosX * 50);
-    raft_1_1.css('bottom', raft_1.PosY * 50);
-
-    var raft_2 = new rafts(10, 1, RaftSpeed1, ".tratwa_1-2", 4, 10);
-    var raft_1_2 = $("<div class='tratwa_1-2'>");
-    container.append(raft_1_2);
-    raft_1_2.css('left', raft_2.PosX * 50);
-    raft_1_2.css('bottom', raft_2.PosY * 50);
-
-
+    var raft_1 = new rafts(6, 1, RaftSpeed1, "tratwa_1-1", 0, 4);
+    var raft_2 = new rafts(10, 1, RaftSpeed1, "tratwa_1-2", 4, 10);
     // Line 2=================
-    var raft_3 = new rafts(4, 2, RaftSpeed2, ".tratwa_2-1", 0, 4);
-    var raft_2_1 = $("<div class='tratwa_2-1'>");
-    container.append(raft_2_1);
-    raft_2_1.css('left', raft_3.PosX * 50);
-    raft_2_1.css('bottom', raft_3.PosY * 50);
-
-    var raft_4 = new rafts(8, 2, RaftSpeed2, ".tratwa_2-2", 4, 10);
-    var raft_2_2 = $("<div class='tratwa_2-2'>");
-    container.append(raft_2_2);
-    raft_2_2.css('left', raft_4.PosX * 50);
-    raft_2_2.css('bottom', raft_4.PosY * 50);
-
-
+    var raft_3 = new rafts(4, 2, RaftSpeed2, "tratwa_2-1", 0, 4);
+    var raft_4 = new rafts(8, 2, RaftSpeed2, "tratwa_2-2", 4, 10);
     // Line 3=================
-    var raft_5 = new rafts(6, 3, RaftSpeed1, ".tratwa_3-1", 0, 4);
-    var raft_3_1 = $("<div class='tratwa_3-1'>");
-    container.append(raft_3_1);
-    raft_3_1.css('left', raft_5.PosX * 50);
-    raft_3_1.css('bottom', raft_5.PosY * 50);
-
-    var raft_6 = new rafts(10, 3, RaftSpeed1, ".tratwa_3-2", 4, 10);
-    var raft_3_2 = $("<div class='tratwa_3-2'>");
-    container.append(raft_3_2);
-    raft_3_2.css('left', raft_6.PosX * 50);
-    raft_3_2.css('bottom', raft_6.PosY * 50);
-
-
+    var raft_5 = new rafts(6, 3, RaftSpeed1, "tratwa_3-1", 0, 4);
+    var raft_6 = new rafts(10, 3, RaftSpeed1, "tratwa_3-2", 4, 10);
     // Line 4=================
-    var raft_7 = new rafts(4, 4, RaftSpeed2, ".tratwa_4-1", 0, 4);
-    var raft_4_1 = $("<div class='tratwa_4-1'>");
-    container.append(raft_4_1);
-    raft_4_1.css('left', raft_7.PosX * 50);
-    raft_4_1.css('bottom', raft_7.PosY * 50);
-
-    var raft_8 = new rafts(8, 4, RaftSpeed2, ".tratwa_4-2", 4, 10);
-    var raft_4_2 = $("<div class='tratwa_4-2'>");
-    container.append(raft_4_2);
-    raft_4_2.css('left', raft_8.PosX * 50);
-    raft_4_2.css('bottom', raft_8.PosY * 50);
-
-
+    var raft_7 = new rafts(4, 4, RaftSpeed2, "tratwa_4-1", 0, 4);
+    var raft_8 = new rafts(8, 4, RaftSpeed2, "tratwa_4-2", 4, 10);
     // Line 5=================
-    var raft_9 = new rafts(6, 6, RaftSpeed1, ".tratwa_5-1", 0, 4);
-    var raft_5_1 = $("<div class='tratwa_5-1'>");
-    container.append(raft_5_1);
-    raft_5_1.css('left', raft_9.PosX * 50);
-    raft_5_1.css('bottom', raft_9.PosY * 50);
-
-    var raft_10 = new rafts(10, 6, RaftSpeed1, ".tratwa_5-2", 4, 10);
-    var raft_5_2 = $("<div class='tratwa_5-2'>");
-    container.append(raft_5_2);
-    raft_5_2.css('left', raft_10.PosX * 50);
-    raft_5_2.css('bottom', raft_10.PosY * 50);
-
-
+    var raft_9 = new rafts(6, 6, RaftSpeed1, "tratwa_5-1", 0, 4);
+    var raft_10 = new rafts(10, 6, RaftSpeed1, "tratwa_5-2", 4, 10);
     // Line 6=================
-    var raft_11 = new rafts(4, 7, RaftSpeed2, ".tratwa_6-1", 0, 4);
-    var raft_6_1 = $("<div class='tratwa_6-1'>");
-    container.append(raft_6_1);
-    raft_6_1.css('left', raft_11.PosX * 50);
-    raft_6_1.css('bottom', raft_11.PosY * 50);
-
-    var raft_12 = new rafts(8, 7, RaftSpeed2, ".tratwa_6-2", 4, 10);
-    var raft_6_2 = $("<div class='tratwa_6-2'>");
-    container.append(raft_6_2);
-    raft_6_2.css('left', raft_12.PosX * 50);
-    raft_6_2.css('bottom', raft_12.PosY * 50);
-
-
+    var raft_11 = new rafts(4, 7, RaftSpeed2, "tratwa_6-1", 0, 4);
+    var raft_12 = new rafts(8, 7, RaftSpeed2, "tratwa_6-2", 4, 10);
     // Line 7=================
-    var raft_13 = new rafts(6, 8, RaftSpeed1, ".tratwa_7-1", 0, 4);
-    var raft_7_1 = $("<div class='tratwa_7-1'>");
-    container.append(raft_7_1);
-    raft_7_1.css('left', raft_13.PosX * 50);
-    raft_7_1.css('bottom', raft_13.PosY * 50);
-
-    var raft_14 = new rafts(10, 8, RaftSpeed1, ".tratwa_7-2", 4, 10);
-    var raft_7_2 = $("<div class='tratwa_7-2'>");
-    container.append(raft_7_2);
-    raft_7_2.css('left', raft_14.PosX * 50);
-    raft_7_2.css('bottom', raft_14.PosY * 50);
-
-
+    var raft_13 = new rafts(6, 8, RaftSpeed1, "tratwa_7-1", 0, 4);
+    var raft_14 = new rafts(10, 8, RaftSpeed1, "tratwa_7-2", 4, 10);
     // Line 8=================
-    var raft_15 = new rafts(4, 9, RaftSpeed2, ".tratwa_8-1", 0, 4);
-    var raft_8_1 = $("<div class='tratwa_8-1'>");
-    container.append(raft_8_1);
-    raft_8_1.css('left', raft_15.PosX * 50);
-    raft_8_1.css('bottom', raft_15.PosY * 50);
-
-    var raft_16 = new rafts(8, 9, RaftSpeed2, ".tratwa_8-2", 4, 10);
-    var raft_8_2 = $("<div class='tratwa_8-2'>");
-    container.append(raft_8_2);
-    raft_8_2.css('left', raft_16.PosX * 50);
-    raft_8_2.css('bottom', raft_16.PosY * 50);
+    var raft_15 = new rafts(4, 9, RaftSpeed2, "tratwa_8-1", 0, 4);
+    var raft_16 = new rafts(8, 9, RaftSpeed2, "tratwa_8-2", 4, 10);
 
     var raftsTab = [
       raft_1, raft_2,
@@ -446,14 +367,14 @@ $(function() {
         if (element.direction == "left") {
           if (element.PosX !== MaxXLeft) {
             element.PosX = element.PosX - 1;
-            $(element.object).css('left', element.PosX * 50);
+            $(element.el).css('left', element.PosX * 50);
           } else {
             element.direction = "right";
           }
         } else if (element.direction == "right") {
           if (element.PosX !== MaxXRight) {
             element.PosX = element.PosX + 1;
-            $(element.object).css('left', element.PosX * 50);
+            $(element.el).css('left', element.PosX * 50);
           } else if (element.PosX == MaxXRight) {
             element.direction = "left";
           }
@@ -506,14 +427,17 @@ $(function() {
         this.direction = "";
         this.MaxXLeft = MaxXLeft;
         this.MaxXRight = MaxXRight;
+        this.el = $("<div class='" + name + "'>")
+        this.setPosition();
+      }
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('top', this.PosY * 50);
+        container.append(this.el)
       }
     }
 
-    var spider = new monster(4, 5, monsterSpeed, ".spider", 0, 10);
-    var spider1 = $("<div class='spider'>");
-    container.append(spider1);
-    spider1.css('left', spider.PosX * 50);
-    spider1.css('bottom', spider.PosY * 50);
+    var spider = new monster(4, 5, monsterSpeed, "spider", 0, 10);
 
     Move(spider.speed, "right", spider, 0, 10);
 
@@ -562,37 +486,56 @@ $(function() {
     });
 
     changePosition = (direction) => {
-      if (direction == 'right') {
-        if (player1.PosX < 10) {
-          player1.PosX = player1.PosX + 1;
-          $('.player1').css('left', player1.PosX * 50);
-          $('.player1').css('bottom', player1.PosY * 50);
-          player1.checkPosition(player1.PosX, player1.PosY);
-        }
-      } else if (direction == 'left') {
-        if (player1.PosX > 0) {
-          player1.PosX = player1.PosX - 1;
-          $('.player1').css('left', player1.PosX * 50);
-          $('.player1').css('bottom', player1.PosY * 50);
-          player1.checkPosition(player1.PosX, player1.PosY);
-        }
-      } else if (direction == "up") {
-        if (player1.PosY < 10) {
-          player1.PosY = player1.PosY + 1;
-          $('.player1').css('bottom', player1.PosX * 50);
-          $('.player1').css('bottom', player1.PosY * 50);
-          player1.checkPosition(player1.PosX, player1.PosY);
-        }
-      } else if (direction == "down") {
-        if (player1.PosY > 0) {
-          player1.PosY = player1.PosY - 1;
-          $('.player1').css('bottom', player1.PosX * 50);
-          $('.player1').css('bottom', player1.PosY * 50);
-          player1.checkPosition(player1.PosX, player1.PosY);
-        }
-      } else {
-        $('.player1').css('bottom', player1.PosY * 50);
+      if(player1.lifes < 1){
+        player1.PosX = 5;
+        player1.PosY = 0;
         $('.player1').css('left', player1.PosX * 50);
+        $('.player1').css('bottom', player1.PosY * 50);
+
+        var gameTitle = $("<div class='gameTitle'>");
+        menuContainer.append(gameTitle);
+        gameTitle.text("The Links Adventures")
+
+        var buttonsContainer = $("<div class='buttonsContainer'>");
+        menuContainer.append(buttonsContainer);
+
+        $(".gameTitle").show();
+        $(".buttonsContainer").show();
+        // location.reload();
+        //tutaj można dać warunek że jak player ma 0 żyć to gra się kończy.
+      }else{
+        if (direction == 'right') {
+          if (player1.PosX < 10) {
+            player1.PosX = player1.PosX + 1;
+            $('.player1').css('left', player1.PosX * 50);
+            $('.player1').css('bottom', player1.PosY * 50);
+            player1.checkPosition(player1.PosX, player1.PosY);
+          }
+        } else if (direction == 'left') {
+          if (player1.PosX > 0) {
+            player1.PosX = player1.PosX - 1;
+            $('.player1').css('left', player1.PosX * 50);
+            $('.player1').css('bottom', player1.PosY * 50);
+            player1.checkPosition(player1.PosX, player1.PosY);
+          }
+        } else if (direction == "up") {
+          if (player1.PosY < 10) {
+            player1.PosY = player1.PosY + 1;
+            $('.player1').css('bottom', player1.PosX * 50);
+            $('.player1').css('bottom', player1.PosY * 50);
+            player1.checkPosition(player1.PosX, player1.PosY);
+          }
+        } else if (direction == "down") {
+          if (player1.PosY > 0) {
+            player1.PosY = player1.PosY - 1;
+            $('.player1').css('bottom', player1.PosX * 50);
+            $('.player1').css('bottom', player1.PosY * 50);
+            player1.checkPosition(player1.PosX, player1.PosY);
+          }
+        } else {
+          $('.player1').css('bottom', player1.PosY * 50);
+          $('.player1').css('left', player1.PosX * 50);
+        }
       }
     };
 
@@ -616,8 +559,6 @@ $(function() {
     backToMenuBtnSPgame.on("click",function(){
       location.reload();
     })
-
-    //GAME OVER====================
   }
 
 //=============================================================================
@@ -640,10 +581,11 @@ $(function() {
         this.id = id;
         this.initPosX = PosX;
         this.initPosY = PosY;
-
+        this.el = $("<div class='" + name + "'>");
+        this.setPosition();
       }
       hide(player) {
-        $(this.name).hide();
+        $(this.el).hide();
         this.PosX = -1;
         this.PosY = -1;
         if(player == "player1"){
@@ -652,38 +594,24 @@ $(function() {
         if(player == "player2"){
           player2.trophie = this.id;
         }
-
       }
       show() {
-        $(this.name).show();
+        $(this.el).show();
         this.PosX = this.initPosX;
         this.PosY = this.initPosY;
       }
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('bottom', this.PosY * 50);
+        container.append(this.el);
+        console.log(this.el);
+      }
     }
 
-    var trophie_1 = new Trophies(".trophie_1-1", 7, 10, 1);
-    var trophie_1_1 = $("<div class='trophie_1-1'>");
-    container.append(trophie_1_1);
-    trophie_1_1.css('left', trophie_1.PosX * 50);
-    trophie_1_1.css('bottom', trophie_1.PosY * 50);
-
-    var trophie_2 = new Trophies(".trophie_1-3", 9, 10, 2);
-    var trophie_1_2 = $("<div class='trophie_1-3'>");
-    container.append(trophie_1_2);
-    trophie_1_2.css('left', trophie_2.PosX * 50);
-    trophie_1_2.css('bottom', trophie_2.PosY * 50);
-
-    var trophie_3 = new Trophies(".trophie_1-2", 1, 0, 3);
-    var trophie_1_3 = $("<div class='trophie_1-2'>");
-    container.append(trophie_1_3);
-    trophie_1_3.css('left', trophie_3.PosX * 50);
-    trophie_1_3.css('bottom', trophie_3.PosY * 50);
-
-    var trophie_4 = new Trophies(".trophie_1-4", 3, 0, 4);
-    var trophie_1_4 = $("<div class='trophie_1-4'>");
-    container.append(trophie_1_4);
-    trophie_1_4.css('left', trophie_4.PosX * 50);
-    trophie_1_4.css('bottom', trophie_4.PosY * 50);
+    var trophie_1 = new Trophies("trophie_1-1", 7, 10, 1);
+    var trophie_2 = new Trophies("trophie_1-3", 9, 10, 2);
+    var trophie_3 = new Trophies("trophie_1-2", 1, 0, 3);
+    var trophie_4 = new Trophies("trophie_1-4", 3, 0, 4);
 
     var trophiesTab = [
       trophie_1,
@@ -709,6 +637,10 @@ $(function() {
     var tresure1 = 0;
     var tresure2 = 0;
 
+    var lvl0 = 0;
+    var lvl5 = 5;
+    var lvl10 = 10;
+
     class player {
       constructor(name, PosY) {
         this.name = name;
@@ -720,6 +652,14 @@ $(function() {
         this.lifes = 0;
         this.items = 0;
         this.trophie = -1
+        this.el = $("<div class='" + name + "'>");
+        this.setPosition();
+      }
+
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('bottom', this.PosY * 50);
+        container.append(this.el);
       }
 
       checkPosition(x, y) {
@@ -734,8 +674,10 @@ $(function() {
           }
         }
         //player dead================
+
+
         for (var i = 0; i < raftsTab.length; i++) {
-          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== 0 && y !== 5 && y !== 10) {
+          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== lvl0 && y !== lvl5 && y !== lvl10) {
             player1.lifes = player1.lifes + 1;
             $('.lifes').text("Player 1 Deaths: " + player1.lifes);
 
@@ -785,7 +727,7 @@ $(function() {
         }
         //player dead================
         for (var i = 0; i < raftsTab.length; i++) {
-          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== 0 && y !== 5 && y !== 10) {
+          if (x !== raftsTab[i].PosX && y !== raftsTab[i].PosY && y !== lvl0 && y !== lvl5 && y !== lvl10) {
             player2.lifes = player2.lifes + 1;
             $('.lifes2').text("Player 2 Deaths: " + player2.lifes);
 
@@ -849,16 +791,7 @@ $(function() {
     }
 
     let player1 = new player("player1", 0);
-    var playerLink = $("<div class='player1'>");
-    $('.container').append(playerLink);
-    $('.player1').css('left', player1.PosX * 50);
-    $('.player1').css('bottom', player1.PosY * 50);
-
     let player2 = new player("player2", 10);
-    var playerLink2 = $("<div class='player2'>");
-    $('.container').append(playerLink2);
-    $('.player2').css('left', player2.PosX * 50);
-    $('.player2').css('bottom', player2.PosY * 50);
 
     let players = [
       player1,
@@ -878,123 +811,46 @@ $(function() {
         this.direction = "";
         this.MaxXLeft = MaxXLeft;
         this.MaxXRight = MaxXRight;
+        this.el = $("<div class='" + name + "'>");
+        this.setPosition();
+      }
+
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('bottom', this.PosY * 50);
+        container.append(this.el);
       }
     }
 
-    var RaftSpeed1 = 900;
-    var RaftSpeed2 = 1000;
+    var raftSpeed1 = 1000;
+    var raftSpeed2 = 1000;
 
     //Each raft create and put in HTML========
     // Line 1=================
-    var raft_1 = new rafts(6, 1, RaftSpeed1, ".tratwa_1-1", 0, 4);
-    var raft_1_1 = $("<div class='tratwa_1-1'>");
-    container.append(raft_1_1);
-    raft_1_1.css('left', raft_1.PosX * 50);
-    raft_1_1.css('bottom', raft_1.PosY * 50);
-
-    var raft_2 = new rafts(10, 1, RaftSpeed1, ".tratwa_1-2", 4, 10);
-    var raft_1_2 = $("<div class='tratwa_1-2'>");
-    container.append(raft_1_2);
-    raft_1_2.css('left', raft_2.PosX * 50);
-    raft_1_2.css('bottom', raft_2.PosY * 50);
-
-
+    var raft_1 = new rafts(6, 1, raftSpeed1, "tratwa_1-1", 0, 4);
+    var raft_2 = new rafts(10, 1, raftSpeed1, "tratwa_1-2", 4, 10);
     // Line 2=================
-    var raft_3 = new rafts(4, 2, RaftSpeed2, ".tratwa_2-1", 0, 4);
-    var raft_2_1 = $("<div class='tratwa_2-1'>");
-    container.append(raft_2_1);
-    raft_2_1.css('left', raft_3.PosX * 50);
-    raft_2_1.css('bottom', raft_3.PosY * 50);
-
-    var raft_4 = new rafts(8, 2, RaftSpeed2, ".tratwa_2-2", 4, 10);
-    var raft_2_2 = $("<div class='tratwa_2-2'>");
-    container.append(raft_2_2);
-    raft_2_2.css('left', raft_4.PosX * 50);
-    raft_2_2.css('bottom', raft_4.PosY * 50);
-
-
+    var raft_3 = new rafts(4, 2, raftSpeed2, "tratwa_2-1", 0, 4);
+    var raft_4 = new rafts(8, 2, raftSpeed2, "tratwa_2-2", 4, 10);
     // Line 3=================
-    var raft_5 = new rafts(6, 3, RaftSpeed1, ".tratwa_3-1", 0, 4);
-    var raft_3_1 = $("<div class='tratwa_3-1'>");
-    container.append(raft_3_1);
-    raft_3_1.css('left', raft_5.PosX * 50);
-    raft_3_1.css('bottom', raft_5.PosY * 50);
-
-    var raft_6 = new rafts(10, 3, RaftSpeed1, ".tratwa_3-2", 4, 10);
-    var raft_3_2 = $("<div class='tratwa_3-2'>");
-    container.append(raft_3_2);
-    raft_3_2.css('left', raft_6.PosX * 50);
-    raft_3_2.css('bottom', raft_6.PosY * 50);
-
-
+    var raft_5 = new rafts(6, 3, raftSpeed1, "tratwa_3-1", 0, 4);
+    var raft_6 = new rafts(10, 3, raftSpeed1, "tratwa_3-2", 4, 10);
     // Line 4=================
-    var raft_7 = new rafts(4, 4, RaftSpeed2, ".tratwa_4-1", 0, 4);
-    var raft_4_1 = $("<div class='tratwa_4-1'>");
-    container.append(raft_4_1);
-    raft_4_1.css('left', raft_7.PosX * 50);
-    raft_4_1.css('bottom', raft_7.PosY * 50);
-
-    var raft_8 = new rafts(8, 4, RaftSpeed2, ".tratwa_4-2", 4, 10);
-    var raft_4_2 = $("<div class='tratwa_4-2'>");
-    container.append(raft_4_2);
-    raft_4_2.css('left', raft_8.PosX * 50);
-    raft_4_2.css('bottom', raft_8.PosY * 50);
-
-
+    var raft_7 = new rafts(4, 4, raftSpeed2, "tratwa_4-1", 0, 4);
+    var raft_8 = new rafts(8, 4, raftSpeed2, "tratwa_4-2", 4, 10);
     // Line 5=================
-    var raft_9 = new rafts(6, 6, RaftSpeed1, ".tratwa_5-1", 0, 4);
-    var raft_5_1 = $("<div class='tratwa_5-1'>");
-    container.append(raft_5_1);
-    raft_5_1.css('left', raft_9.PosX * 50);
-    raft_5_1.css('bottom', raft_9.PosY * 50);
-
-    var raft_10 = new rafts(10, 6, RaftSpeed1, ".tratwa_5-2", 4, 10);
-    var raft_5_2 = $("<div class='tratwa_5-2'>");
-    container.append(raft_5_2);
-    raft_5_2.css('left', raft_10.PosX * 50);
-    raft_5_2.css('bottom', raft_10.PosY * 50);
-
-
+    var raft_9 = new rafts(6, 6, raftSpeed1, "tratwa_5-1", 0, 4);
+    var raft_10 = new rafts(10, 6, raftSpeed1, "tratwa_5-2", 4, 10);
     // Line 6=================
-    var raft_11 = new rafts(4, 7, RaftSpeed2, ".tratwa_6-1", 0, 4);
-    var raft_6_1 = $("<div class='tratwa_6-1'>");
-    container.append(raft_6_1);
-    raft_6_1.css('left', raft_11.PosX * 50);
-    raft_6_1.css('bottom', raft_11.PosY * 50);
-
-    var raft_12 = new rafts(8, 7, RaftSpeed2, ".tratwa_6-2", 4, 10);
-    var raft_6_2 = $("<div class='tratwa_6-2'>");
-    container.append(raft_6_2);
-    raft_6_2.css('left', raft_12.PosX * 50);
-    raft_6_2.css('bottom', raft_12.PosY * 50);
-
-
+    var raft_11 = new rafts(4, 7, raftSpeed2, "tratwa_6-1", 0, 4);
+    var raft_12 = new rafts(8, 7, raftSpeed2, "tratwa_6-2", 4, 10);
     // Line 7=================
-    var raft_13 = new rafts(6, 8, RaftSpeed1, ".tratwa_7-1", 0, 4);
-    var raft_7_1 = $("<div class='tratwa_7-1'>");
-    container.append(raft_7_1);
-    raft_7_1.css('left', raft_13.PosX * 50);
-    raft_7_1.css('bottom', raft_13.PosY * 50);
-
-    var raft_14 = new rafts(10, 8, RaftSpeed1, ".tratwa_7-2", 4, 10);
-    var raft_7_2 = $("<div class='tratwa_7-2'>");
-    container.append(raft_7_2);
-    raft_7_2.css('left', raft_14.PosX * 50);
-    raft_7_2.css('bottom', raft_14.PosY * 50);
-
-
+    var raft_13 = new rafts(6, 8, raftSpeed1, "tratwa_7-1", 0, 4);
+    var raft_14 = new rafts(10, 8, raftSpeed1, "tratwa_7-2", 4, 10);
     // Line 8=================
-    var raft_15 = new rafts(4, 9, RaftSpeed2, ".tratwa_8-1", 0, 4);
-    var raft_8_1 = $("<div class='tratwa_8-1'>");
-    container.append(raft_8_1);
-    raft_8_1.css('left', raft_15.PosX * 50);
-    raft_8_1.css('bottom', raft_15.PosY * 50);
+    var raft_15 = new rafts(4, 9, raftSpeed2, "tratwa_8-1", 0, 4);
+    var raft_16 = new rafts(8, 9, raftSpeed2, "tratwa_8-2", 4, 10);
 
-    var raft_16 = new rafts(8, 9, RaftSpeed2, ".tratwa_8-2", 4, 10);
-    var raft_8_2 = $("<div class='tratwa_8-2'>");
-    container.append(raft_8_2);
-    raft_8_2.css('left', raft_16.PosX * 50);
-    raft_8_2.css('bottom', raft_16.PosY * 50);
 
     var raftsTab = [
       raft_1, raft_2,
@@ -1017,14 +873,14 @@ $(function() {
         if (element.direction == "left") {
           if (element.PosX !== MaxXLeft) {
             element.PosX = element.PosX - 1;
-            $(element.object).css('left', element.PosX * 50);
+            $(element.el).css('left', element.PosX * 50);
           } else {
             element.direction = "right";
           }
         } else if (element.direction == "right") {
           if (element.PosX !== MaxXRight) {
             element.PosX = element.PosX + 1;
-            $(element.object).css('left', element.PosX * 50);
+            $(element.el).css('left', element.PosX * 50);
           } else if (element.PosX == MaxXRight) {
             element.direction = "left";
           }
@@ -1077,14 +933,17 @@ $(function() {
         this.direction = "";
         this.MaxXLeft = MaxXLeft;
         this.MaxXRight = MaxXRight;
+        this.el = $("<div class='" + name + "'>")
+        this.setPosition();
+      }
+      setPosition(){
+        this.el.css('left', this.PosX * 50);
+        this.el.css('top', this.PosY * 50);
+        container.append(this.el)
       }
     }
 
-    var spider = new monster(4, 5, monsterSpeed, ".spider", 0, 10);
-    var spider1 = $("<div class='spider'>");
-    container.append(spider1);
-    spider1.css('left', spider.PosX * 50);
-    spider1.css('bottom', spider.PosY * 50);
+    var spider = new monster(4, 5, monsterSpeed, "spider", 0, 10);
 
     Move(spider.speed, "right", spider, 0, 10);
 
@@ -1275,6 +1134,5 @@ $(function() {
       location.reload();
     })
 
-    //GAME OVER====================
   }
 });
